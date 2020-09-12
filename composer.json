@@ -8,7 +8,7 @@
     "license": "MIT",
     "require": {
         "php": ">=7.1.0",
-        "dillingham/nova-items-field": "~0.1"
+        "armincms/eset": "~0.1"
     },
     "autoload": {
         "psr-4": {
