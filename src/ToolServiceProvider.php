@@ -1,6 +1,6 @@
 <?php
 
-namespace Armincms\Eset;
+namespace Armincms\EsetLast;
  
 use Illuminate\Support\ServiceProvider; 
 use Laravel\Nova\Nova; 
