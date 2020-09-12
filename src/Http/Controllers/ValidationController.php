@@ -1,6 +1,6 @@
 <?php
 
-namespace Armincms\Eset\Http\Controllers;
+namespace Armincms\EsetLast;
 
 use Illuminate\Routing\Controller;
 use Armincms\Eset\Http\Requests\ValidationRequest; 

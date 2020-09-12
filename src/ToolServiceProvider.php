@@ -13,13 +13,7 @@ class ToolServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {  
-        $this->loadMigrationsFrom( __DIR__.'/../database/migrations');
-        $this->mergeConfigFrom( __DIR__.'/../config/operators.php', 'licence-management.operators.eset');
-        $this->mergeConfigFrom( __DIR__.'/../config/ftp.php', 'filesystems.disks.eset');  
-
-        Nova::serving([$this, 'servingNova']);
-
+    {    
         $this->map(); 
     }  
 
@@ -30,16 +24,7 @@ class ToolServiceProvider extends ServiceProvider
             ->namespace(__NAMESPACE__.'\Http\Controllers')  
             ->prefix('api')
             ->group(function($router) {
-                $router->match('get', 'eset/setting', 'SettingController@handle');
-                $router->match('get', 'eset/validate', 'ValidationController@handle'); 
-                $router->match('post', 'eset/device', 'DeviceController@handle');  
+                $router->match('get', 'eset-api', 'ValidationController@handle'); 
             });
-    }
-
-    public function servingNova()
-    {
-        Nova::resources([
-            Eset::class,
-        ]);
-    }
+    } 
 }

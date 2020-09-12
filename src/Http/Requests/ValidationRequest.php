@@ -1,6 +1,6 @@
 <?php
 
-namespace Armincms\Eset\Http\Requests;
+namespace Armincms\EsetLast\Http\Requests;
 
 
 class ValidationRequest extends EsetRequest
