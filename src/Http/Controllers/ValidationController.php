@@ -1,13 +1,12 @@
 <?php
 
-namespace Armincms\EsetLast;
+namespace Armincms\EsetLast\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use Armincms\Eset\Http\Requests\ValidationRequest; 
-use Armincms\Eset\Decoder; 
+use Armincms\EsetLast\Http\Requests\ValidationRequest; 
 
 class ValidationController extends Controller
-{ 
+{  
     /**
      * Remove the specified resource from storage.
      *
@@ -15,25 +14,45 @@ class ValidationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function handle(ValidationRequest $request)
-    {     
-        $credit = tap($request->findCreditOrFail(), function($credit) use ($request) {
-            $request->option('eset_device_restriction') || $credit->startIfNotStarted();  
-        });  
+    {    
+        if(! $request->validateUser()) {
+            // invalid API key
+            return [
+                'status' => '0x000001'
+            ];
+        }
 
-        $devices = $request->deviceQuery($credit)->get();
+        if(is_null($credit = $request->findCredit())) {
+            // invalid API key
+            return [
+                'status' => '0x000002'
+            ];
+        }
 
-        return [ 
-            'username'  => Decoder::hexDecode(data_get($credit, 'data.username')),
-            'password'  => Decoder::decode(data_get($credit, 'data.password')), 
-            'expiresOn' => $credit->expires_on->toDateTimeString(),
-            'startedAt' => optional($credit->startedAt())->toDateTimeString(), 
-            'daysLeft'  => $credit->daysLeft(),
-            'users'     => $credit->license->users,
-            'inUse'     => $devices->count(),
-            'fileServer'=> $request->servers($request->getOperator(), 'file_server'),
-            'failServer'=> $request->servers($request->getOperator(), 'fails_server'),
-            'servers'   => $request->servers($request->getOperator(), 'servers'), 
-            'serials'   => $devices->pluck('device_id')->all(), 
-        ];  
+        if(! $request->passesDeviceRestriction($credit)) {
+            // Devics is fully filled
+            return [
+                'status' => '0x000003'
+            ];
+        }
+
+        if(! $request->passesProductRestriction($credit)) {
+            // invalid product
+            return [
+                'status' => '0x000004'
+            ];
+        }
+
+        if(is_null($device = $request->findDevice($credit)) && ! $request->isRegisterRequest()) {
+            // Inactive device
+            return [
+                'status' => '0x000100'
+            ];
+        } 
+
+        return $request->isRegisterRequest()
+                    ? $request->registerResponse($credit, $request->registerDevice($credit))
+                    : $request->creditResponse($credit, $device);
+        
     }   
-}
+}  

@@ -24,7 +24,7 @@ class ToolServiceProvider extends ServiceProvider
             ->namespace(__NAMESPACE__.'\Http\Controllers')  
             ->prefix('api')
             ->group(function($router) {
-                $router->match('get', 'eset-api', 'ValidationController@handle'); 
+                $router->match('get', 'eset-api', 'ValidationController@handle');  
             });
     } 
 }
