@@ -97,7 +97,7 @@ class ValidationRequest extends EsetRequest
 
         return tap($device, function($device) {
         	$device->update([
-	            'data' => array_merge((array) $device->data, $this->getProfileInput()->all())
+	            'data' => array_merge($this->getProfileInput()->all(), (array) $device->data)
 	        ]);
         }); 
     }
