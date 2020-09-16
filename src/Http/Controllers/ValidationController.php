@@ -37,20 +37,22 @@ class ValidationController extends Controller
         }
 
         if(! $request->passesProductRestriction($credit)) {
-            // invalid product
+            // invalid product  
             return [
-                'status' => '0x000004'
+                'status' => '0x000004',
+                'type'   => data_get($credit, 'license.product.driver'),
             ];
         }
 
         if(is_null($device = $request->findDevice($credit)) && ! $request->isRegisterRequest()) {
             // Inactive device
             return [
-                'status' => '0x000100'
+                'status' => '0x000100',
+                'type'   => data_get($credit, 'license.product.driver'),
             ];
         } 
 
-        return $request->isRegisterRequest()
+        return $request->isRegisterRequest() && is_null($device)
                     ? $request->registerResponse($credit, $request->registerDevice($credit))
                     : $request->creditResponse($credit, $device);
         

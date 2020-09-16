@@ -2,8 +2,7 @@
 
 namespace Armincms\EsetLast\Http\Requests;
 
-use Armincms\Eset\Http\Requests\{EsetRequest, IntractsWithDevice, IntractsWithProduct};
-use Armincms\Eset\Decoder; 
+use Armincms\Eset\Http\Requests\{EsetRequest, IntractsWithDevice, IntractsWithProduct}; 
  
 class ValidationRequest extends EsetRequest
 {
@@ -43,6 +42,15 @@ class ValidationRequest extends EsetRequest
     {
         return $this->creditQuery() 
                     ->whereJsonContains('data->key', $this->get($this->getLicenseProductKey()))
+                    ->with([
+                        'license' => function($q) {
+                            $q->withTrashed()->with([
+                                'product' => function($q) {
+                                    $q->withTrashed();
+                                }
+                            ]);
+                        }
+                    ])
                     ->first();
     }
 
@@ -98,6 +106,7 @@ class ValidationRequest extends EsetRequest
     {
     	return [
             'status'    => '0x00602', 
+            'type'      => data_get($credit, 'license.product.driver'),
             'username'  => data_get($credit, 'data.username'),
             'password'  => data_get($credit, 'data.password'), 
             'expiresOn' => $credit->expires_on->toDateTimeString(),
@@ -121,9 +130,7 @@ class ValidationRequest extends EsetRequest
             'company'   => data_get($device, 'data.Company'),
             'phone'     => data_get($device, 'data.Phone'),
             'mail'      => data_get($device, 'data.Mail'),
-            'note'      => data_get($device, 'data.Note'), 
-            'username'  => Decoder::hexDecode(data_get($credit, 'data.username')),
-            'password'  => Decoder::decode(data_get($credit, 'data.password')),  
+            'note'      => data_get($device, 'data.Note'),  
         ]);
     }
 } 
