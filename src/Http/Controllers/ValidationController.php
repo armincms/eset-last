@@ -52,7 +52,7 @@ class ValidationController extends Controller
             ];
         } 
 
-        return $request->isRegisterRequest() && is_null($device)
+        return $request->isRegisterRequest() 
                     ? $request->registerResponse($credit, $request->registerDevice($credit))
                     : $request->creditResponse($credit, $device);
         
