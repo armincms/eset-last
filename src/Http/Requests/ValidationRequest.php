@@ -90,16 +90,10 @@ class ValidationRequest extends EsetRequest
 
     public function registerDevice($credit)
     {
-    	$device = $this->deviceQuery($credit->markAsInUse())->firstOrCreate([
+    	return $this->deviceQuery($credit->startIfNotStarted())->firstOrCreate([
     		'device_id' => $this->getDeviceId(),
     		'credit_id' => $credit->startIfNotStarted()->getKey()
-    	]);
-
-        return tap($device, function($device) {
-        	$device->update([
-	            'data' => array_merge($this->getProfileInput()->all(), (array) $device->data)
-	        ]);
-        }); 
+    	], ['data' => $this->getProfileInput()->all()]);
     }
 
     public function registerResponse($credit, $device)
