@@ -92,7 +92,7 @@ class ValidationRequest extends EsetRequest
     {
     	$device = $this->deviceQuery($credit->markAsInUse())->firstOrCreate([
     		'device_id' => $this->getDeviceId(),
-    		'credit_id' => $credit->getKey()
+    		'credit_id' => $credit->startIfNotStarted()->getKey()
     	]);
 
         return tap($device, function($device) {
