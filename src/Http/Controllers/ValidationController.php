@@ -32,7 +32,9 @@ class ValidationController extends Controller
         if(! $request->passesDeviceRestriction($credit)) {
             // Devics is fully filled
             return [
-                'status' => '0x000003'
+                'status'=> '0x000003', 
+                'users' => $credit->license->users,
+                'inUse' => $request->deviceQuery($credit)->count(),
             ];
         }
 
