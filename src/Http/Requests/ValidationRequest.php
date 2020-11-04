@@ -2,6 +2,7 @@
 
 namespace Armincms\EsetLast\Http\Requests;
 
+use Armincms\EasyLicense\Credit;
 use Armincms\Eset\Http\Requests\{EsetRequest, IntractsWithDevice, IntractsWithProduct}; 
  
 class ValidationRequest extends EsetRequest
@@ -31,6 +32,23 @@ class ValidationRequest extends EsetRequest
             $this->getDeviceIdKey() 	  => 'required',
             $this->getLicenseProductKey() => 'required',
         ];
+    }
+
+    public function hasValidOperator(Credit $credit)
+    { 
+        return parent::hasValidOperator($credit) || $this->hasValidParentOperator($credit);
+    }
+
+    public function hasValidParentOperator($credit)
+    { 
+        return $this->getParentOperator() === data_get($credit, 'license.product.driver'); 
+    }
+
+    public function getParentOperator()
+    {
+        $driver = $this->getOperator();
+
+        return config("licence-management.operators.eset.{$driver}.parent");
     }
 
     public function validateUser()
