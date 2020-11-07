@@ -41,14 +41,14 @@ class ValidationRequest extends EsetRequest
         return $this->esetHasValidOperator($credit) || $this->hasValidParentOperator($credit);
     }
 
-    public function hasValidParentOperator($credit)
+    public function hasValidParentOperator(Credit $credit)
     { 
-        return $this->getParentOperator() === data_get($credit, 'license.product.driver'); 
+        return $this->getParentOperator($credit) === $this->getOperator(); 
     }
 
-    public function getParentOperator()
+    public function getParentOperator(Credit $credit)
     {
-        $driver = $this->getOperator();
+        $driver = data_get($credit, 'license.product.driver');
 
         return config("licence-management.operators.eset.{$driver}.parent");
     }
