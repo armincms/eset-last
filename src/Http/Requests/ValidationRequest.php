@@ -7,7 +7,9 @@ use Armincms\Eset\Http\Requests\{EsetRequest, IntractsWithDevice, IntractsWithPr
  
 class ValidationRequest extends EsetRequest
 {
-	use IntractsWithDevice, IntractsWithProduct;  
+	use IntractsWithDevice, IntractsWithProduct {
+        hasValidOperator as esetHasValidOperator;
+    }  
 
     const OPERATOR_KEY = 'ProductType';
 
@@ -36,7 +38,7 @@ class ValidationRequest extends EsetRequest
 
     public function hasValidOperator(Credit $credit)
     { 
-        return parent::hasValidOperator($credit) || $this->hasValidParentOperator($credit);
+        return $this->esetHasValidOperator($credit) || $this->hasValidParentOperator($credit);
     }
 
     public function hasValidParentOperator($credit)
