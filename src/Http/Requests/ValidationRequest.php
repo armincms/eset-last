@@ -50,7 +50,7 @@ class ValidationRequest extends EsetRequest
     {
         $driver = data_get($credit, 'license.product.driver');
 
-        return config("licence-management.operators.eset.{$driver}.parent");
+        return config("licence-management.operators.eset.drivers.{$driver}.parent");
     }
 
     public function validateUser()
