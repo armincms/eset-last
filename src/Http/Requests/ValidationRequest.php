@@ -48,7 +48,7 @@ class ValidationRequest extends EsetRequest
 
     public function getParentOperator(Credit $credit)
     {
-        $driver = data_get($credit, 'license.product.driver');
+        $driver = $this->getCreditOperator($credit);
 
         return config("licence-management.operators.eset.drivers.{$driver}.parent");
     }
@@ -120,7 +120,7 @@ class ValidationRequest extends EsetRequest
     {
     	return [
             'status'    => '0x00602', 
-            'type'      => data_get($credit, 'license.product.driver'),
+            'type'      => $this->getCreditOperator($credit),
             'username'  => data_get($credit, 'data.username'),
             'password'  => data_get($credit, 'data.password'), 
             'expiresOn' => $credit->expires_on->toDateTimeString(),
@@ -128,9 +128,16 @@ class ValidationRequest extends EsetRequest
             'daysLeft'  => $credit->daysLeft(),
             'users'     => $credit->license->users,
             'inUse'     => $this->deviceQuery($credit)->count(),
-            'fileServer'=> $this->servers($this->getOperator(), 'file_server'),
-            'FailSafeServer'=> $this->servers($this->getOperator(), 'fails_server'),
+            'fileServer'=> $this->servers($this->getCreditOperator($credit), 'file_server'),
+            'FailSafeServer'=> $this->servers($this->getCreditOperator($credit), 'fails_server'),
         ];
+    }
+
+    public function getCreditOperator($credit)
+    {
+        $credit->relationLoaded('license.product') || $credit->load('license.product');
+
+        return data_get($credit, 'license.product.driver');
     }
 
     public function creditResponse($credit, $device)
